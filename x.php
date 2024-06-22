@@ -61,13 +61,30 @@ function run_query($query) {
     oci_close($connection);
 }
 
-// Membaca query dari input pengguna
-echo "Masukkan query: ";
-$query = trim(fgets(STDIN));
+do {
+    // Membaca query dari input pengguna
+    echo "Masukkan query: ";
+    $query = trim(fgets(STDIN));
 
-if (!empty($query)) {
-    run_query($query);
-} else {
-    echo "Query tidak boleh kosong." . PHP_EOL;
-}
+    if (!empty($query)) {
+        // Memeriksa dan mengubah query jika mengandung "limit"
+        if (stripos($query, 'limit') !== false) {
+            $query = preg_replace('/\s+limit\s+(\d+)/i', ' AND ROWNUM <= $1', $query);
+            // Memastikan query memiliki klausa WHERE untuk menggunakan ROWNUM
+            if (stripos($query, 'where') === false) {
+                $query = preg_replace('/AND ROWNUM <= (\d+)/i', 'WHERE ROWNUM <= $1', $query);
+            }
+        }
+        run_query($query);
+    } else {
+        echo "Query tidak boleh kosong." . PHP_EOL;
+    }
+
+    // Menanyakan pengguna apakah ingin menjalankan query lagi
+    echo "Apakah Anda ingin menjalankan query lagi? (y/n): ";
+    $answer = trim(fgets(STDIN));
+
+} while (strtolower($answer) == 'y');
+
+echo "Terima kasih! Program selesai." . PHP_EOL;
 ?>
