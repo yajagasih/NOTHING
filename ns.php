@@ -3,8 +3,8 @@
 $db['default'] = array(
     'dsn'       => '',
     'hostname' => '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) (HOST = 1.1.1.243) (PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = dbo4.arindo.net)))',
-    'username' => 'sopp_nsra',
-    'password' => 'sopp_nsra',
+    'username' => 'olap_nsra',
+    'password' => 'nasiraOlapDB24',
     'database'  => '',
     'dbdriver'  => 'oci8',
     'dbprefix'  => '',
