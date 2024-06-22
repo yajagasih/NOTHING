@@ -3,8 +3,8 @@
 $db['default'] = array(
     'dsn'       => '',
     'hostname'  => '(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 1.1.1.248)(PORT = 1521)) (CONNECT_DATA = (SERVICE_NAME = dbora.arindo.net)))',
-    'username'  => 'web_nsra',
-    'password'  => 'nsra_webbase',
+    'username'  => 'web_nasiraolap',
+    'password'  => 'nas1raOlap',
     'database'  => '',
     'dbdriver'  => 'oci8',
     'dbprefix'  => '',
@@ -21,71 +21,62 @@ $db['default'] = array(
     'save_queries' => TRUE
 );
 
-// Membuat koneksi ke database
-$connection = oci_connect($db['default']['username'], $db['default']['password'], $db['default']['hostname']);
+// Fungsi untuk mengeksekusi query dan menampilkan hasilnya
+function run_query($query) {
+    global $db;
+    // Membuat koneksi ke database
+    $connection = oci_connect($db['default']['username'], $db['default']['password'], $db['default']['hostname']);
 
-if (!$connection) {
-    $error = oci_error();
-    echo "Koneksi ke database gagal: " . $error['message'];
-} else {
-    // Menyiapkan dan menjalankan query update
-    $update_query = "
-        UPDATE sopp_nsra.mstpayment
-        SET PAYMENTSAL = 6500000
-        WHERE PAYMENTNAME = 'MAMASGTG' AND PAYMENTCODE = 'NSR4058'
-    ";
-    $stid_update = oci_parse($connection, $update_query);
-
-    if (oci_execute($stid_update)) {
-        echo "Data berhasil diperbarui.\n";
-    } else {
-        $error = oci_error($stid_update);
-        echo "Error menjalankan query update: " . $error['message'];
+    if (!$connection) {
+        $error = oci_error();
+        echo "Koneksi ke database gagal: " . $error['message'] . PHP_EOL;
+        return;
     }
 
-    // Menutup statement
-    oci_free_statement($stid_update);
+    $stid = oci_parse($connection, $query);
 
-    // Menyiapkan dan menjalankan query untuk mendapatkan data member
-    $query_member = "
-        SELECT PAYMENTCODE, PAYMENTNAME, PAYMENTADDR, decode(PAYMENTSTA,'9','TDK AKTIF','AKTIF') AS PAYMENTSTA, 
-        b.nama_KORWIL, PAYMENTTELP, PAYMENTSAL, a.TGL_DAFTAR 
-        FROM sopp_nsra.mstpayment A, sopp_nsra.master_korwil B  
-        WHERE a.kode_korwil = b.kode_korwil(+) 
-        ORDER BY a.NOURUT DESC
-    ";
-    $stid_member = oci_parse($connection, $query_member);
+    if (!oci_execute($stid)) {
+        $error = oci_error($stid);
+        echo "Error menjalankan query: " . $error['message'] . PHP_EOL;
+    } else {
+        $ncols = oci_num_fields($stid);
 
-    echo "<h2>Data Member</h2>";
-
-    if (oci_execute($stid_member)) {
-        $ncols = oci_num_fields($stid_member);
-
-        echo "<table border='1'>\n";
-        echo "<tr>\n";
         for ($i = 1; $i <= $ncols; $i++) {
-            $colname = oci_field_name($stid_member, $i);
-            echo "<th>" . htmlentities($colname, ENT_QUOTES) . "</th>\n";
+            $colname = oci_field_name($stid, $i);
+            echo str_pad($colname, 20);
         }
-        echo "</tr>\n";
+        echo PHP_EOL;
 
-        while ($row = oci_fetch_array($stid_member, OCI_ASSOC+OCI_RETURN_NULLS)) {
-            echo "<tr>\n";
+        while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
             foreach ($row as $item) {
-                echo "<td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+                echo str_pad($item !== null ? $item : "NULL", 20);
             }
-            echo "</tr>\n";
+            echo PHP_EOL;
         }
-        echo "</table>\n";
-    } else {
-        $error = oci_error($stid_member);
-        echo "Error menjalankan query member: " . $error['message'];
     }
 
     // Menutup statement
-    oci_free_statement($stid_member);
+    oci_free_statement($stid);
+    // Menutup koneksi
+    oci_close($connection);
 }
 
-// Menutup koneksi ketika selesai
-oci_close($connection);
+do {
+    // Membaca query dari input pengguna
+    echo "Masukkan query: ";
+    $query = trim(fgets(STDIN));
+
+    if (!empty($query)) {
+        run_query($query);
+    } else {
+        echo "Query tidak boleh kosong." . PHP_EOL;
+    }
+
+    // Menanyakan pengguna apakah ingin menjalankan query lagi
+    echo "Apakah Anda ingin menjalankan query lagi? (y/n): ";
+    $answer = trim(fgets(STDIN));
+
+} while (strtolower($answer) == 'y');
+
+echo "Terima kasih! Program selesai." . PHP_EOL;
 ?>
