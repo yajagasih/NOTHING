@@ -3,8 +3,8 @@
 $db['default'] = array(
     'dsn'       => '',
     'hostname'  => '(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 1.1.1.248)(PORT = 1521)) (CONNECT_DATA = (SERVICE_NAME = dbora.arindo.net)))',
-    'username' => 'web_nasiraolap',
-	'password' => 'nas1raOlap',
+    'username'  => 'web_nasiraolap',
+    'password'  => 'nas1raOlap',
     'database'  => '',
     'dbdriver'  => 'oci8',
     'dbprefix'  => '',
@@ -31,8 +31,8 @@ if (!$connection) {
     // Menyiapkan dan menjalankan query update
     $update_query = "
         UPDATE sopp_nsra.mstpayment
-        SET PAYMENTSAL = 1500000
-        WHERE PAYMENTNAME = 'SITINUR05' AND PAYMENTCODE = 'NSR4066'
+        SET PAYMENTSAL = 6500000
+        WHERE PAYMENTNAME = 'MAMASGTG' AND PAYMENTCODE = 'NSR4058'
     ";
     $stid_update = oci_parse($connection, $update_query);
 
