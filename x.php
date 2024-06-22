@@ -39,19 +39,29 @@ function run_query($query) {
         $error = oci_error($stid);
         echo "Error menjalankan query: " . $error['message'] . PHP_EOL;
     } else {
-        $ncols = oci_num_fields($stid);
+        // Memeriksa jenis query
+        $query_type = strtoupper(strtok($query, " "));
 
-        for ($i = 1; $i <= $ncols; $i++) {
-            $colname = oci_field_name($stid, $i);
-            echo str_pad($colname, 20);
-        }
-        echo PHP_EOL;
+        if ($query_type == 'SELECT') {
+            // Menangani query SELECT
+            $ncols = oci_num_fields($stid);
 
-        while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-            foreach ($row as $item) {
-                echo str_pad($item !== null ? $item : "NULL", 20);
+            for ($i = 1; $i <= $ncols; $i++) {
+                $colname = oci_field_name($stid, $i);
+                echo str_pad($colname, 20);
             }
             echo PHP_EOL;
+
+            while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+                foreach ($row as $item) {
+                    echo str_pad($item !== null ? $item : "NULL", 20);
+                }
+                echo PHP_EOL;
+            }
+        } else {
+            // Menangani query non-SELECT
+            $row_count = oci_num_rows($stid);
+            echo "Query berhasil dijalankan, $row_count baris terpengaruh." . PHP_EOL;
         }
     }
 
