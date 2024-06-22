@@ -3,8 +3,8 @@
 $db['default'] = array(
     'dsn'       => '',
     'hostname'  => '(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 1.1.1.248)(PORT = 1521)) (CONNECT_DATA = (SERVICE_NAME = dbora.arindo.net)))',
-    'username' => 'web_nsra',
-    'password' => 'nsra_webbase',
+    'username' => 'web_nasiraolap',
+	'password' => 'nas1raOlap',
     'database'  => '',
     'dbdriver'  => 'oci8',
     'dbprefix'  => '',
